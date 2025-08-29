@@ -25,6 +25,13 @@ h1 { margin-top: 32px; margin-bottom: 10px; }
   margin: 1em 0;
   text-shadow: 0 0 10px #a0f0ff;
 }
+.wizard-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 0;
+}
 #wizard-btn {
   background: none;
   border: none;
@@ -33,6 +40,9 @@ h1 { margin-top: 32px; margin-bottom: 10px; }
   display: block;
   margin-left: auto;
   margin-right: auto;
+  padding: 0;
+  touch-action: manipulation;
+  position: relative;
 }
 #wizard-img {
   image-rendering: pixelated;
@@ -40,10 +50,19 @@ h1 { margin-top: 32px; margin-bottom: 10px; }
   height: 128px;
   transition: transform 0.1s;
   filter: drop-shadow(0 0 8px #a0f0ff88);
+  pointer-events: none;
 }
 #wizard-btn:active #wizard-img {
   transform: scale(1.08);
   filter: brightness(1.2) drop-shadow(0 0 12px #fff);
+}
+#lightning-canvas {
+  position: absolute;
+  left: 0; top: 0;
+  width: 128px;
+  height: 128px;
+  pointer-events: none;
+  z-index: 2;
 }
 #menu-bar {
   margin-bottom: 20px;
@@ -63,6 +82,7 @@ h1 { margin-top: 32px; margin-bottom: 10px; }
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
   box-shadow: 0 0 8px #a0f0ff;
+  touch-action: manipulation;
 }
 .menu-btn:disabled {
   background: #444;
@@ -172,5 +192,5 @@ h1 { margin-top: 32px; margin-bottom: 10px; }
 }
 @media (max-width: 600px) {
   .menu-content { padding: 14px 2vw 12px 2vw; }
-  #wizard-img { width: 96px; height: 96px; }
+  #wizard-img, #lightning-canvas { width: 96px; height: 96px; }
 }
