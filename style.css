@@ -8,7 +8,7 @@ body {
   display: flex;
 }
 #left-sidebar {
-  width: 120px;
+  width: 130px;
   min-width: 82px;
   background: #120c22;
   display: flex;
@@ -24,8 +24,8 @@ body {
 #menu-bar {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 32px;
+  align-items: stretch;
+  gap: 28px;
   margin-top: 60px;
   width: 100%;
 }
@@ -35,20 +35,21 @@ body {
   border: 2px solid #a0f0ff;
   font-family: 'Press Start 2P', monospace;
   font-size: 1em;
-  padding: 10px 5px;
+  padding: 10px 8px;
   border-radius: 10px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
   box-shadow: 0 0 8px #a0f0ff;
-  width: 95px;
-  margin: 0;
+  width: 110px;
+  margin: 0 auto;
   touch-action: manipulation;
   word-break: break-word;
   text-align: center;
-  white-space: normal;
+  white-space: pre-line;
   display: flex;
   align-items: center;
   justify-content: center;
+  min-height: 44px;
 }
 .menu-btn:disabled {
   background: #444;
@@ -141,13 +142,14 @@ h1, .main-menu-title {
   margin-bottom: 0;
   height: 200px;
 }
-.wizard-bg {
-  background: #fff;
-  border-radius: 22px;
+
+.wizard-outline-bg {
+  background: transparent;
+  border-radius: 18px;
   width: 170px;
   height: 190px;
   margin: 0 auto;
-  box-shadow: 0 0 0 3px #a772ff, 0 0 16px 2px #a772ff55;
+  box-shadow: 0 0 0 4px #a772ff, 0 0 24px 6px #a772ff88;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,21 +168,6 @@ h1, .main-menu-title {
   height: 180px;
   overflow: visible;
 }
-#wizard-outline {
-  position: absolute;
-  left: 0; top: 0;
-  width: 160px;
-  height: 180px;
-  pointer-events: none;
-  z-index: 2;
-  display: block;
-  box-shadow:
-    0 0 0 2px #a772ff,
-    0 0 0 5px #542395,
-    0 0 18px 3px #a772ffbb;
-  border-radius: 8px;
-  opacity: 0.98;
-}
 #wizard-img {
   image-rendering: pixelated;
   width: 160px;
@@ -190,7 +177,15 @@ h1, .main-menu-title {
   left: 0; top: 0;
   z-index: 3;
   transition: transform 0.15s cubic-bezier(.25,1.7,.6,.95);
-  filter: none;
+  filter:
+    drop-shadow(2px 0 0 #fff)
+    drop-shadow(-2px 0 0 #fff)
+    drop-shadow(0 2px 0 #fff)
+    drop-shadow(0 -2px 0 #fff)
+    drop-shadow(2px 2px 0 #fff)
+    drop-shadow(-2px 2px 0 #fff)
+    drop-shadow(2px -2px 0 #fff)
+    drop-shadow(-2px -2px 0 #fff);
 }
 #wizard-btn.shake #wizard-img {
   animation: shake-tilt 0.22s cubic-bezier(.25,1.7,.6,.95);
@@ -389,10 +384,12 @@ h1, .main-menu-title {
   font-size: 2em;
   margin-bottom: 38px;
   margin-top: 0;
+  text-align: center;
+  width: 100%;
 }
 .main-menu-btn {
   margin: 16px 0;
-  padding: 16px 34px;
+  padding: 16px 0;
   font-size: 1.05em;
   font-family: 'Press Start 2P', monospace;
   border-radius: 12px;
@@ -404,21 +401,27 @@ h1, .main-menu-title {
   cursor: pointer;
   text-align: center;
   width: 220px;
+  word-break: break-word;
+  white-space: pre-line;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 44px;
 }
 .main-menu-btn:active {
   background: #4d3685;
 }
 @media (max-width: 800px) {
-  #left-sidebar { min-width: 60px; width: 64px; }
-  .menu-btn { width: 54px; font-size: 0.85em; padding: 9px 0; }
+  #left-sidebar { min-width: 60px; width: 76px; }
+  .menu-btn { width: 65px; font-size: 0.90em; padding: 9px 0; }
   #version-label { font-size: 0.65em; margin-left: 4px;}
   .main-menu-btn { width: 130px; font-size: 0.9em; }
 }
 @media (max-width: 600px) {
   .main-menu-content { padding: 18px 2vw 12px 2vw;}
   .menu-content { padding: 14px 2vw 12px 2vw; }
-  #wizard-img, #wizard-outline, #wizard-lightning-canvas { width: 120px; height: 140px; }
-  .wizard-bg { width: 130px; height: 150px;}
+  #wizard-img, #wizard-lightning-canvas { width: 120px; height: 140px; }
+  .wizard-outline-bg { width: 130px; height: 150px;}
   .wizard-container, #wizard-btn { width: 120px; height: 140px; }
   .side-menu { width: 99vw; max-width: 99vw; }
   .main-menu-btn { width: 99vw; }
