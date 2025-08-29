@@ -1,400 +1,426 @@
-// ==== Game State ====
-let power = 0;
-let basePowerPerClick = 1;
-let powerPerClick = 1;
-let ascensions = 0;
-let ascensionBonus = 0;
-let totalPower = 0;
-let powerPerSecond = 0;
-let unlockedTitles = [];
-let currentTitle = "Novice";
-
-// Version
-const GAME_VERSION = "v1.5.0";
-
-// Title milestones
-const TITLES = [
-  { rebirths: 0,   name: "Novice" },
-  { rebirths: 1,   name: "Apprentice" },
-  { rebirths: 3,   name: "Adept" },
-  { rebirths: 7,   name: "Sorcerer" },
-  { rebirths: 15,  name: "Mage" },
-  { rebirths: 30,  name: "Warlock" },
-  { rebirths: 50,  name: "Archmage" },
-  { rebirths: 100, name: "Ascended" }
-];
-
-// ==== Upgrades ====
-const upgrades = [
-  {
-    name: "Staff Upgrade",
-    desc: "Power per click +1",
-    baseCost: 20,
-    cost: 20,
-    level: 0,
-    type: "ppc",
-    effect: () => { basePowerPerClick += 1; }
-  },
-  {
-    name: "Magic Gloves",
-    desc: "Power per click +5",
-    baseCost: 120,
-    cost: 120,
-    level: 0,
-    type: "ppc",
-    effect: () => { basePowerPerClick += 5; }
-  },
-  {
-    name: "Arcane Tome",
-    desc: "Power per click x2",
-    baseCost: 500,
-    cost: 500,
-    level: 0,
-    type: "ppc",
-    effect: () => { basePowerPerClick *= 2; }
-  },
-  {
-    name: "Crystal Ball",
-    desc: "Power per click x3",
-    baseCost: 2500,
-    cost: 2500,
-    level: 0,
-    type: "ppc",
-    effect: () => { basePowerPerClick *= 3; }
-  },
-  {
-    name: "Apprentice",
-    desc: "Power per second +1",
-    baseCost: 100,
-    cost: 100,
-    level: 0,
-    type: "pps",
-    effect: () => { powerPerSecond += 1; }
-  },
-  {
-    name: "Magic Cat",
-    desc: "Power per second +5",
-    baseCost: 400,
-    cost: 400,
-    level: 0,
-    type: "pps",
-    effect: () => { powerPerSecond += 5; }
-  },
-  {
-    name: "Mana Fountain",
-    desc: "Power per second +20",
-    baseCost: 2000,
-    cost: 2000,
-    level: 0,
-    type: "pps",
-    effect: () => { powerPerSecond += 20; }
-  },
-  {
-    name: "Time Amulet",
-    desc: "Power per second x2",
-    baseCost: 7000,
-    cost: 7000,
-    level: 0,
-    type: "pps",
-    effect: () => { powerPerSecond *= 2; }
-  }
-];
-
-// ==== Data Save/Load ====
-function saveGame() {
-  const data = {
-    power,
-    basePowerPerClick,
-    ascensions,
-    ascensionBonus,
-    upgrades: upgrades.map(u => ({level: u.level, cost: u.cost})),
-    totalPower,
-    powerPerSecond,
-    unlockedTitles,
-    currentTitle,
-    version: GAME_VERSION
-  };
-  localStorage.setItem('wizardAscensionSave', JSON.stringify(data));
+* { box-sizing: border-box; }
+body {
+  background: #181028;
+  color: #ffeedd;
+  font-family: 'Press Start 2P', monospace;
+  margin: 0;
+  min-height: 100vh;
+  display: flex;
 }
-
-function loadGame() {
-  const data = JSON.parse(localStorage.getItem('wizardAscensionSave'));
-  if (data) {
-    power = data.power ?? 0;
-    basePowerPerClick = data.basePowerPerClick ?? 1;
-    ascensions = data.ascensions ?? 0;
-    ascensionBonus = data.ascensionBonus ?? 0;
-    totalPower = data.totalPower ?? 0;
-    powerPerSecond = data.powerPerSecond ?? 0;
-    unlockedTitles = data.unlockedTitles ?? [];
-    currentTitle = data.currentTitle ?? "Novice";
-    if (Array.isArray(data.upgrades)) {
-      for (let i = 0; i < upgrades.length; i++) {
-        const up = data.upgrades[i];
-        if (up) {
-          upgrades[i].level = up.level ?? 0;
-          upgrades[i].cost = up.cost ?? upgrades[i].baseCost;
-        }
-      }
-    }
-  }
+#left-sidebar {
+  width: 120px;
+  min-width: 82px;
+  background: #120c22;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 0 24px 0;
+  position: relative;
+  height: 100vh;
+  z-index: 1000;
+  border-right: 2px solid #2a193e;
 }
-
-function resetGameData() {
-  if (confirm("Are you sure you want to erase all your wizard progress?")) {
-    localStorage.removeItem('wizardAscensionSave');
-    location.reload();
-  }
+#menu-bar {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 32px;
+  margin-top: 60px;
+  width: 100%;
 }
-
-function updateTitleUnlocks() {
-  // Unlock all titles up to current rebirths
-  unlockedTitles = [];
-  for (const t of TITLES) {
-    if (ascensions >= t.rebirths) unlockedTitles.push(t.name);
-  }
-  // If previously selected title is no longer unlocked (rare), reset to highest unlocked
-  if (!unlockedTitles.includes(currentTitle)) {
-    currentTitle = unlockedTitles[unlockedTitles.length - 1] || "Novice";
-  }
-  renderTitleBar();
-  saveGame();
+.menu-btn {
+  background: #242055;
+  color: #ffeedd;
+  border: 2px solid #a0f0ff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1em;
+  padding: 10px 5px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 0 8px #a0f0ff;
+  width: 95px;
+  margin: 0;
+  touch-action: manipulation;
+  word-break: break-word;
+  text-align: center;
+  white-space: normal;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-
-function renderTitleBar() {
-  const bar = document.getElementById('title-bar');
-  let html = `Title: <span id="player-title">${currentTitle}</span>`;
-  if (unlockedTitles.length > 1) {
-    html += `<select id="title-select" style="margin-left:12px;font-family:inherit;font-size:1em;">`
-    for (const t of unlockedTitles) {
-      html += `<option value="${t}"${t === currentTitle ? " selected" : ""}>${t}</option>`;
-    }
-    html += `</select>`;
-  }
-  bar.innerHTML = html;
-  const sel = document.getElementById("title-select");
-  if (sel) {
-    sel.onchange = function() {
-      currentTitle = this.value;
-      renderTitleBar();
-      saveGame();
-    };
-  }
+.menu-btn:disabled {
+  background: #444;
+  color: #bbb;
+  cursor: not-allowed;
+  border: 2px solid #888;
 }
-
-// ==== UI Logic ====
-function updatePower() {
-  powerPerClick = basePowerPerClick + ascensionBonus;
-  document.getElementById('power').textContent = "Power: " + Math.floor(power);
-  document.getElementById('pps').textContent = "Power per second: " + Math.floor(powerPerSecond);
-  document.getElementById('bonus').textContent = ascensions > 0
-    ? `Ascension Bonus: +${ascensionBonus} Power per click (from ${ascensions} Mystic Rebirth${ascensions > 1 ? 's' : ''})`
-    : '';
-  document.getElementById('open-rebirth-btn').disabled = power < 10000;
-  if (document.getElementById('shop-overlay').classList.contains('active')) renderUpgrades();
-  document.getElementById('rebirth-bonus-preview').textContent = "+" + ((ascensions + 1) * 5);
-  renderTitleBar();
-  document.getElementById('version-label').textContent = GAME_VERSION;
+.menu-btn.reset {
+  background: #a94444;
+  border-color: #ffaaaa;
 }
-
-function renderUpgrades() {
-  let html = "";
-  for (let i = 0; i < upgrades.length; i++) {
-    const u = upgrades[i];
-    html += `<button class="upgrade-btn" id="upgrade-${i}" ${power < u.cost ? 'disabled' : ''}>
-      ${u.name} (${u.cost} Power) [Bought: ${u.level}]<br>
-      <span style="font-size:.93em;color:#ffeedd99;">${u.desc}</span>
-    </button>`;
-  }
-  document.getElementById('upgrades').innerHTML = html;
-  for (let i = 0; i < upgrades.length; i++) {
-    if (power >= upgrades[i].cost) {
-      document.getElementById(`upgrade-${i}`).onclick = function() {
-        power -= upgrades[i].cost;
-        upgrades[i].level += 1;
-        upgrades[i].effect();
-        // Price scaling: double for x2/x3 upgrades, +50% for +amount upgrades
-        if (upgrades[i].desc.includes("x2") || upgrades[i].desc.includes("x3")) {
-          upgrades[i].cost = Math.floor(upgrades[i].cost * 2.5);
-        } else {
-          upgrades[i].cost = Math.floor(upgrades[i].cost * 1.5 + 5);
-        }
-        gameEvent();
-        renderUpgrades();
-      }
-    }
-  }
+#version-label {
+  color: #b19fff;
+  font-size: 0.9em;
+  font-family: 'Press Start 2P', monospace;
+  letter-spacing: 0.5px;
+  margin-top: 12px;
+  margin-bottom: 8px;
+  align-self: flex-start;
+  margin-left: 10px;
+  opacity: 0.85;
+  user-select: none;
 }
-
-// ==== Events ====
-function gameEvent() {
-  saveGame();
-  updatePower();
+main {
+  width: 100vw;
+  max-width: 670px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 8px;
+  margin: 0 auto;
+  position: relative;
+  flex: 1;
 }
-
-// Lightning effect logic
-const wizardBtn = document.getElementById('wizard-btn');
-const lightningCanvas = document.getElementById('lightning-canvas');
-const lc = lightningCanvas.getContext('2d');
-const clickAudio = document.getElementById('click-audio');
-
-function drawLightning() {
-  lc.clearRect(0, 0, lightningCanvas.width, lightningCanvas.height);
-
-  // Lightning always starts exactly at the top center
-  const startX = Math.floor(lightningCanvas.width / 2);
-  const startY = 0;
-  const endX = startX + (Math.random() - 0.5) * 60;
-  const endY = lightningCanvas.height - 10 + Math.random() * 6;
-  let points = [{x: startX, y: startY}];
-
-  let steps = 20 + Math.floor(Math.random() * 7);
-  for (let i = 1; i <= steps; ++i) {
-    let t = i / steps;
-    let nx = startX + (endX - startX) * t + (Math.random() - 0.5) * 36;
-    let ny = startY + (endY - startY) * t + (Math.random() - 0.5) * 18;
-    points.push({x: nx, y: ny});
-  }
-  points.push({x: endX, y: endY});
-
-  // Main purple lightning
-  lc.save();
-  lc.globalAlpha = 1.0;
-  lc.lineWidth = 5;
-  lc.strokeStyle = "#a772ff";
-  lc.beginPath();
-  lc.moveTo(points[0].x, points[0].y);
-  for (let p of points) lc.lineTo(p.x, p.y);
-  lc.stroke();
-  lc.restore();
-
-  // Inner white lightning
-  lc.save();
-  lc.globalAlpha = 0.8;
-  lc.lineWidth = 2;
-  lc.strokeStyle = "#fff";
-  lc.beginPath();
-  lc.moveTo(points[0].x, points[0].y);
-  for (let p of points) lc.lineTo(p.x, p.y);
-  lc.stroke();
-  lc.restore();
-
-  // Black shadow branches
-  for (let j = 0; j < 2 + Math.floor(Math.random()*2); j++) {
-    let branchFrom = Math.floor(points.length * (0.3 + Math.random() * 0.4));
-    let len = 3 + Math.floor(Math.random() * 4);
-    let bx = points[branchFrom].x, by = points[branchFrom].y;
-    lc.save();
-    lc.globalAlpha = 0.4 + Math.random() * 0.2;
-    lc.lineWidth = 2.5;
-    lc.strokeStyle = "#0a0018";
-    lc.beginPath();
-    lc.moveTo(bx, by);
-    let angle = Math.PI/2 + (Math.random()-0.5)*1.3;
-    for (let k = 1; k <= len; k++) {
-      bx += Math.cos(angle) * (12 + Math.random() * 8);
-      by += Math.sin(angle) * (12 + Math.random() * 8);
-      lc.lineTo(bx, by);
-      angle += (Math.random()-0.5) * 0.8;
-    }
-    lc.stroke();
-    lc.restore();
-  }
-
-  // Animate fade out
-  let opacity = 1;
-  function fade() {
-    lc.globalCompositeOperation = "destination-out";
-    lc.globalAlpha = 0.09;
-    lc.fillRect(0,0,lightningCanvas.width,lightningCanvas.height);
-    lc.globalCompositeOperation = "source-over";
-    opacity -= 0.07;
-    if (opacity > 0) {
-      requestAnimationFrame(fade);
-    } else {
-      lc.clearRect(0, 0, lightningCanvas.width, lightningCanvas.height);
-    }
-  }
-  fade();
+.center-content {
+  width: 100%;
+  max-width: 540px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 2;
+  position: relative;
 }
-
-// Prevent double-tap zoom on iOS/Android
-wizardBtn.addEventListener('touchstart', function(e) {
-  if (e.touches.length > 1) return;
-  e.preventDefault();
-  wizardBtn.click();
-}, {passive: false});
-
-// Wizard click: shake, sound, lightning, power
-wizardBtn.addEventListener('click', () => {
-  power += powerPerClick;
-  totalPower += powerPerClick;
-  drawLightning();
-  if (!wizardBtn.classList.contains('shake')) {
-    wizardBtn.classList.add('shake');
-    setTimeout(() => wizardBtn.classList.remove('shake'), 220);
-  }
-  if (clickAudio) {
-    clickAudio.currentTime = 0;
-    clickAudio.play();
-  }
-  gameEvent();
-});
-
-// PPS Ticker
-setInterval(() => {
-  if (powerPerSecond > 0) {
-    power += powerPerSecond / 10; // 10 times per second for smoother gain
-    totalPower += powerPerSecond / 10;
-    gameEvent();
-  }
-}, 100);
-
-// Shop menu
-const shopOverlay = document.getElementById('shop-overlay');
-const openShopBtn = document.getElementById('open-shop-btn');
-const closeShopBtn = document.getElementById('close-shop-btn');
-openShopBtn.onclick = () => { shopOverlay.classList.add('active'); renderUpgrades(); };
-closeShopBtn.onclick = () => { shopOverlay.classList.remove('active'); };
-shopOverlay.onclick = function(e) { if (e.target === shopOverlay) shopOverlay.classList.remove('active'); };
-
-// Rebirth menu
-const rebirthOverlay = document.getElementById('rebirth-overlay');
-const openRebirthBtn = document.getElementById('open-rebirth-btn');
-const closeRebirthBtn = document.getElementById('close-rebirth-btn');
-const confirmRebirthBtn = document.getElementById('confirm-rebirth-btn');
-const cancelRebirthBtn = document.getElementById('cancel-rebirth-btn');
-openRebirthBtn.onclick = () => { rebirthOverlay.classList.add('active'); };
-closeRebirthBtn.onclick = () => { rebirthOverlay.classList.remove('active'); };
-cancelRebirthBtn.onclick = () => { rebirthOverlay.classList.remove('active'); };
-rebirthOverlay.onclick = function(e) { if (e.target === rebirthOverlay) rebirthOverlay.classList.remove('active'); };
-confirmRebirthBtn.onclick = function() {
-  if (power >= 10000) {
-    ascensions += 1;
-    ascensionBonus = ascensions * 5;
-    power = 0;
-    basePowerPerClick = 1;
-    powerPerSecond = 0;
-    for (const u of upgrades) {
-      u.level = 0;
-      u.cost = u.baseCost;
-    }
-    updateTitleUnlocks();
-    rebirthOverlay.classList.remove('active');
-    gameEvent();
-    setTimeout(() => {
-      alert(`You have performed a Mystic Rebirth!\nPermanent bonus: +${ascensionBonus} Power per click.`);
-    }, 250);
-  }
-};
-
-// Reset Data
-document.getElementById('reset-data-btn').onclick = resetGameData;
-
-// Save when window/tab closes
-window.addEventListener('beforeunload', saveGame);
-
-// ==== Initial Load ====
-loadGame();
-updateTitleUnlocks();
-updatePower();
+h1, .main-menu-title {
+  text-align: center;
+  width: 100%;
+  margin-top: 38px;
+  margin-bottom: 10px;
+  letter-spacing: 2px;
+}
+#title-bar {
+  font-size: 1.1em;
+  color: #fff;
+  margin-bottom: 0.5em;
+  letter-spacing: 1px;
+  min-height: 1.2em;
+  text-shadow: 0 2px 6px #000a;
+  text-align: center;
+  width: 100%;
+}
+#bonus {
+  color: #fffa7c;
+  font-size: 1.1em;
+  margin-bottom: 1em;
+  min-height: 1.2em;
+  width: 100%;
+  text-align: center;
+}
+#stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0.5em;
+  gap: 2px;
+  width: 100%;
+}
+#power, #pps {
+  font-size: 1.1em;
+  min-height: 1.2em;
+  text-shadow: 0 0 10px #a0f0ff33;
+  width: 100%;
+  text-align: center;
+}
+.wizard-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+  margin-bottom: 0;
+  height: 200px;
+}
+.wizard-bg {
+  background: #fff;
+  border-radius: 22px;
+  width: 170px;
+  height: 190px;
+  margin: 0 auto;
+  box-shadow: 0 0 0 3px #a772ff, 0 0 16px 2px #a772ff55;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+#wizard-btn {
+  background: none;
+  border: none;
+  cursor: pointer;
+  display: block;
+  padding: 0;
+  touch-action: manipulation;
+  position: relative;
+  outline: none;
+  width: 160px;
+  height: 180px;
+  overflow: visible;
+}
+#wizard-outline {
+  position: absolute;
+  left: 0; top: 0;
+  width: 160px;
+  height: 180px;
+  pointer-events: none;
+  z-index: 2;
+  display: block;
+  box-shadow:
+    0 0 0 2px #a772ff,
+    0 0 0 5px #542395,
+    0 0 18px 3px #a772ffbb;
+  border-radius: 8px;
+  opacity: 0.98;
+}
+#wizard-img {
+  image-rendering: pixelated;
+  width: 160px;
+  height: 180px;
+  pointer-events: none;
+  position: absolute;
+  left: 0; top: 0;
+  z-index: 3;
+  transition: transform 0.15s cubic-bezier(.25,1.7,.6,.95);
+  filter: none;
+}
+#wizard-btn.shake #wizard-img {
+  animation: shake-tilt 0.22s cubic-bezier(.25,1.7,.6,.95);
+}
+@keyframes shake-tilt {
+  0%   { transform: rotate(-2deg) translate(0, 0); }
+  12%  { transform: rotate(3deg) translate(-5px, 2px);}
+  25%  { transform: rotate(-4deg) translate(5px, -3px);}
+  38%  { transform: rotate(5deg) translate(-4px, 2px);}
+  51%  { transform: rotate(-3deg) translate(3px, 2px);}
+  64%  { transform: rotate(3deg) translate(-2px, -3px);}
+  77%  { transform: rotate(-2deg) translate(2px, 1px);}
+  100% { transform: rotate(0deg) translate(0, 0);}
+}
+#wizard-lightning-canvas {
+  position: absolute;
+  left: 0; top: 0;
+  width: 160px;
+  height: 180px;
+  pointer-events: none;
+  z-index: 4;
+}
+#main-lightning-canvas {
+  position: absolute;
+  left: 0; top: 0;
+  width: 100vw;
+  height: 120px;
+  min-height: 80px;
+  pointer-events: none;
+  z-index: 1;
+  display: block;
+}
+.tip {
+  margin-top: 2em;
+  color: #aaa;
+  font-size: 0.9em;
+  width: 100%;
+  text-align: center;
+}
+.side-menu {
+  position: fixed;
+  top: 0; right: 0;
+  width: 350px;
+  max-width: 90vw;
+  height: 100vh;
+  background: #2a193ee6;
+  box-shadow: -4px 0 30px #1b0e2e77;
+  display: none;
+  flex-direction: column;
+  align-items: flex-start;
+  z-index: 2000;
+  overflow-y: auto;
+  border-left: 4px solid #a0f0ff;
+  transition: transform 0.15s;
+}
+.side-menu.active { display: flex !important; }
+.menu-content {
+  width: 100%;
+  max-width: 100%;
+  padding: 36px 20px 32px 20px;
+  position: relative;
+  text-align: left;
+  font-size: 1em;
+  overflow-y: auto;
+  max-height: 100vh;
+}
+.close-btn {
+  position: absolute;
+  right: 18px; top: 10px;
+  background: none;
+  border: none;
+  color: #ffeedd;
+  font-size: 1.2em;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.close-btn:hover {opacity:1;}
+.upgrade-btn {
+  margin: 12px 0;
+  font-size: 1em;
+  padding: 10px 8px;
+  background: #5a2e8a;
+  color: #fff;
+  border: 2px solid #e0bbff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+  box-shadow: 0 0 8px #a0f0ff;
+  display: block;
+  width: 100%;
+  text-align: left;
+  word-break: break-word;
+  white-space: normal;
+}
+.upgrade-btn[disabled] {
+  background: #444;
+  color: #bbb;
+  cursor: not-allowed;
+  border: 2px solid #888;
+}
+#upgrades { margin-bottom: 10px; }
+#titles-list {
+  width: 100%;
+  overflow-y: auto;
+  max-height: 68vh;
+}
+.title-row {
+  background: #39275b;
+  border-radius: 8px;
+  margin: 12px 0;
+  padding: 12px 10px 10px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  position: relative;
+}
+.title-row.equipped {
+  border: 3px solid #a0f0ff;
+  background: #4d3685;
+}
+.title-row .bonus-line {
+  color: #c7b4ff;
+  font-size: 0.89em;
+  font-weight: bold;
+  margin-top: 2px;
+}
+.title-row .equip-btn {
+  margin-top: 8px;
+  padding: 7px 0;
+  width: 120px;
+  align-self: flex-end;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1em;
+  border-radius: 8px;
+  border: 2px solid #a0f0ff;
+  cursor: pointer;
+  background: #242055;
+  color: #ffeedd;
+  box-shadow: 0 0 7px #a0f0ff55;
+  transition: background 0.18s;
+}
+.title-row .equip-btn.unequip {
+  background: #a94444;
+  border-color: #ffaaaa;
+  color: #fff;
+}
+.rebirth-confirm-btn, .rebirth-cancel-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1em;
+  padding: 10px 22px;
+  margin: 15px 8px 0 8px;
+  border-radius: 10px;
+  border: 2px solid #a0f0ff;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.rebirth-confirm-btn {
+  background: #a0f0ff;
+  color: #442266;
+  font-weight:bold;
+  box-shadow: 0 0 10px #a0f0ff;
+}
+.rebirth-cancel-btn {
+  background: #444;
+  color: #fff;
+  border: 2px solid #888;
+}
+.rebirth-warning {
+  color:#fffa7c;
+  font-size: 1em;
+}
+.main-menu-overlay {
+  background: #181028f2;
+  position: fixed;
+  z-index: 3000;
+  left: 0; top: 0; right: 0; bottom: 0;
+  width: 100vw; height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.main-menu-content {
+  background: #2a193e;
+  border: 4px solid #a0f0ff;
+  border-radius: 22px;
+  box-shadow: 0 0 40px #a0f0ff55;
+  color: #fff;
+  padding: 56px 30px 42px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.main-menu-title {
+  font-size: 2em;
+  margin-bottom: 38px;
+  margin-top: 0;
+}
+.main-menu-btn {
+  margin: 16px 0;
+  padding: 16px 34px;
+  font-size: 1.05em;
+  font-family: 'Press Start 2P', monospace;
+  border-radius: 12px;
+  border: 2px solid #a0f0ff;
+  background: #242055;
+  color: #ffeedd;
+  box-shadow: 0 0 8px #a0f0ff;
+  transition: background 0.18s;
+  cursor: pointer;
+  text-align: center;
+  width: 220px;
+}
+.main-menu-btn:active {
+  background: #4d3685;
+}
+@media (max-width: 800px) {
+  #left-sidebar { min-width: 60px; width: 64px; }
+  .menu-btn { width: 54px; font-size: 0.85em; padding: 9px 0; }
+  #version-label { font-size: 0.65em; margin-left: 4px;}
+  .main-menu-btn { width: 130px; font-size: 0.9em; }
+}
+@media (max-width: 600px) {
+  .main-menu-content { padding: 18px 2vw 12px 2vw;}
+  .menu-content { padding: 14px 2vw 12px 2vw; }
+  #wizard-img, #wizard-outline, #wizard-lightning-canvas { width: 120px; height: 140px; }
+  .wizard-bg { width: 130px; height: 150px;}
+  .wizard-container, #wizard-btn { width: 120px; height: 140px; }
+  .side-menu { width: 99vw; max-width: 99vw; }
+  .main-menu-btn { width: 99vw; }
+  #main-lightning-canvas { min-height: 50px; }
+}
