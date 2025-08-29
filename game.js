@@ -6,8 +6,25 @@ let ascensions = 0;
 let ascensionBonus = 0;
 let totalPower = 0;
 let powerPerSecond = 0;
+let unlockedTitles = [];
+let currentTitle = "Novice";
 
-// Upgrade list
+// Version
+const GAME_VERSION = "v1.5.0";
+
+// Title milestones
+const TITLES = [
+  { rebirths: 0,   name: "Novice" },
+  { rebirths: 1,   name: "Apprentice" },
+  { rebirths: 3,   name: "Adept" },
+  { rebirths: 7,   name: "Sorcerer" },
+  { rebirths: 15,  name: "Mage" },
+  { rebirths: 30,  name: "Warlock" },
+  { rebirths: 50,  name: "Archmage" },
+  { rebirths: 100, name: "Ascended" }
+];
+
+// ==== Upgrades ====
 const upgrades = [
   {
     name: "Staff Upgrade",
@@ -92,7 +109,10 @@ function saveGame() {
     ascensionBonus,
     upgrades: upgrades.map(u => ({level: u.level, cost: u.cost})),
     totalPower,
-    powerPerSecond
+    powerPerSecond,
+    unlockedTitles,
+    currentTitle,
+    version: GAME_VERSION
   };
   localStorage.setItem('wizardAscensionSave', JSON.stringify(data));
 }
@@ -106,6 +126,8 @@ function loadGame() {
     ascensionBonus = data.ascensionBonus ?? 0;
     totalPower = data.totalPower ?? 0;
     powerPerSecond = data.powerPerSecond ?? 0;
+    unlockedTitles = data.unlockedTitles ?? [];
+    currentTitle = data.currentTitle ?? "Novice";
     if (Array.isArray(data.upgrades)) {
       for (let i = 0; i < upgrades.length; i++) {
         const up = data.upgrades[i];
@@ -125,6 +147,41 @@ function resetGameData() {
   }
 }
 
+function updateTitleUnlocks() {
+  // Unlock all titles up to current rebirths
+  unlockedTitles = [];
+  for (const t of TITLES) {
+    if (ascensions >= t.rebirths) unlockedTitles.push(t.name);
+  }
+  // If previously selected title is no longer unlocked (rare), reset to highest unlocked
+  if (!unlockedTitles.includes(currentTitle)) {
+    currentTitle = unlockedTitles[unlockedTitles.length - 1] || "Novice";
+  }
+  renderTitleBar();
+  saveGame();
+}
+
+function renderTitleBar() {
+  const bar = document.getElementById('title-bar');
+  let html = `Title: <span id="player-title">${currentTitle}</span>`;
+  if (unlockedTitles.length > 1) {
+    html += `<select id="title-select" style="margin-left:12px;font-family:inherit;font-size:1em;">`
+    for (const t of unlockedTitles) {
+      html += `<option value="${t}"${t === currentTitle ? " selected" : ""}>${t}</option>`;
+    }
+    html += `</select>`;
+  }
+  bar.innerHTML = html;
+  const sel = document.getElementById("title-select");
+  if (sel) {
+    sel.onchange = function() {
+      currentTitle = this.value;
+      renderTitleBar();
+      saveGame();
+    };
+  }
+}
+
 // ==== UI Logic ====
 function updatePower() {
   powerPerClick = basePowerPerClick + ascensionBonus;
@@ -136,6 +193,8 @@ function updatePower() {
   document.getElementById('open-rebirth-btn').disabled = power < 10000;
   if (document.getElementById('shop-overlay').classList.contains('active')) renderUpgrades();
   document.getElementById('rebirth-bonus-preview').textContent = "+" + ((ascensions + 1) * 5);
+  renderTitleBar();
+  document.getElementById('version-label').textContent = GAME_VERSION;
 }
 
 function renderUpgrades() {
@@ -182,17 +241,17 @@ const clickAudio = document.getElementById('click-audio');
 function drawLightning() {
   lc.clearRect(0, 0, lightningCanvas.width, lightningCanvas.height);
 
-  // Parameters
-  const startX = 80 + (Math.random()-0.5)*8;
+  // Lightning always starts exactly at the top center
+  const startX = Math.floor(lightningCanvas.width / 2);
   const startY = 0;
-  const endX = 80 + (Math.random()-0.5)*30;
-  const endY = 170 + Math.random()*6;
+  const endX = startX + (Math.random() - 0.5) * 60;
+  const endY = lightningCanvas.height - 10 + Math.random() * 6;
   let points = [{x: startX, y: startY}];
 
   let steps = 20 + Math.floor(Math.random() * 7);
   for (let i = 1; i <= steps; ++i) {
     let t = i / steps;
-    let nx = startX + (endX - startX) * t + (Math.random() - 0.5) * 30;
+    let nx = startX + (endX - startX) * t + (Math.random() - 0.5) * 36;
     let ny = startY + (endY - startY) * t + (Math.random() - 0.5) * 18;
     points.push({x: nx, y: ny});
   }
@@ -202,7 +261,7 @@ function drawLightning() {
   lc.save();
   lc.globalAlpha = 1.0;
   lc.lineWidth = 5;
-  lc.strokeStyle = "#ad22ff";
+  lc.strokeStyle = "#a772ff";
   lc.beginPath();
   lc.moveTo(points[0].x, points[0].y);
   for (let p of points) lc.lineTo(p.x, p.y);
@@ -320,6 +379,7 @@ confirmRebirthBtn.onclick = function() {
       u.level = 0;
       u.cost = u.baseCost;
     }
+    updateTitleUnlocks();
     rebirthOverlay.classList.remove('active');
     gameEvent();
     setTimeout(() => {
@@ -336,4 +396,5 @@ window.addEventListener('beforeunload', saveGame);
 
 // ==== Initial Load ====
 loadGame();
+updateTitleUnlocks();
 updatePower();
