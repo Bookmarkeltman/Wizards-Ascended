@@ -1,1 +1,337 @@
-<h1>base</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Wizard’s Ascension: Power Unleashed</title>
+  <style>
+    body {
+      background: #181028;
+      color: #ffeedd;
+      font-family: 'Press Start 2P', monospace;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
+    #power {
+      font-size: 2em;
+      margin: 1em 0;
+      text-shadow: 0 0 10px #a0f0ff;
+    }
+    #wizard-btn {
+      background: none;
+      border: none;
+      margin: 30px 0;
+      cursor: pointer;
+    }
+    #wizard-img {
+      image-rendering: pixelated;
+      width: 128px;
+      height: 128px;
+      transition: transform 0.1s;
+    }
+    #wizard-btn:active #wizard-img {
+      transform: scale(1.08);
+      filter: brightness(1.2);
+    }
+    #menu-bar {
+      margin-bottom: 20px;
+    }
+    .menu-btn {
+      background: #242055;
+      color: #ffeedd;
+      border: 2px solid #a0f0ff;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1em;
+      padding: 10px 24px;
+      margin: 0 12px;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      box-shadow: 0 0 8px #a0f0ff;
+    }
+    .menu-btn:disabled {
+      background: #444;
+      color: #bbb;
+      cursor: not-allowed;
+      border: 2px solid #888;
+    }
+    /* Overlay menus */
+    .menu-overlay {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0; right: 0; bottom: 0;
+      background: rgba(24,16,40,0.90);
+      align-items: center;
+      justify-content: center;
+    }
+    .menu-content {
+      background: #2a193e;
+      color: #ffeedd;
+      border: 4px solid #a0f0ff;
+      border-radius: 16px;
+      max-width: 400px;
+      width: 90vw;
+      margin: 0 auto;
+      box-shadow: 0 0 24px #a0f0ff88;
+      padding: 32px 18px 24px 18px;
+      position: relative;
+      text-align: left;
+      font-size: 1em;
+      animation: popin 0.25s;
+    }
+    @keyframes popin {
+      from {transform: scale(0.9);}
+      to {transform: scale(1);}
+    }
+    .close-btn {
+      position: absolute;
+      right: 14px; top: 10px;
+      background: none;
+      border: none;
+      color: #ffeedd;
+      font-size: 1.2em;
+      cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+      opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .close-btn:hover {opacity:1;}
+    .upgrade-btn {
+      margin: 12px 0;
+      font-size: 1em;
+      padding: 10px 18px;
+      background: #5a2e8a;
+      color: #fff;
+      border: 2px solid #e0bbff;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: 'Press Start 2P', monospace;
+      box-shadow: 0 0 8px #a0f0ff;
+      display: block;
+      width: 95%;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    .upgrade-btn[disabled] {
+      background: #444;
+      color: #bbb;
+      cursor: not-allowed;
+      border: 2px solid #888;
+    }
+    #bonus {
+      color: #fffa7c;
+      font-size: 1.1em;
+      margin-bottom: 1em;
+    }
+    .rebirth-confirm-btn, .rebirth-cancel-btn {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1em;
+      padding: 10px 22px;
+      margin: 15px 8px 0 8px;
+      border-radius: 10px;
+      border: 2px solid #a0f0ff;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .rebirth-confirm-btn {
+      background: #a0f0ff;
+      color: #442266;
+      font-weight:bold;
+      box-shadow: 0 0 10px #a0f0ff;
+    }
+    .rebirth-cancel-btn {
+      background: #444;
+      color: #fff;
+      border: 2px solid #888;
+    }
+    /* Responsive */
+    @media (max-width: 480px) {
+      .menu-content { padding: 20px 4px 12px 4px; }
+      #upgrades { width: 98vw; }
+    }
+  </style>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+  <h1>Wizard’s Ascension</h1>
+  <div id="bonus"></div>
+  <div id="power">Power: 0</div>
+  <button id="wizard-btn" aria-label="Channel Power">
+    <img id="wizard-img" src="wizard.png" alt="Pixel Wizard">
+  </button>
+  <div id="menu-bar">
+    <button class="menu-btn" id="open-shop-btn">Shop</button>
+    <button class="menu-btn" id="open-rebirth-btn" disabled>Rebirth</button>
+  </div>
+  <div style="margin-top: 2em; color: #aaa;">
+    <b>Tip:</b> Spend Power on magical upgrades and ascend for permanent bonuses!
+  </div>
+
+  <!-- SHOP MENU OVERLAY -->
+  <div class="menu-overlay" id="shop-overlay">
+    <div class="menu-content">
+      <button class="close-btn" id="close-shop-btn" title="Close Shop">&times;</button>
+      <h2 style="margin-bottom:10px;">🧙‍♂️ Wizard Shop</h2>
+      <div id="upgrades"></div>
+    </div>
+  </div>
+
+  <!-- REBIRTH MENU OVERLAY -->
+  <div class="menu-overlay" id="rebirth-overlay">
+    <div class="menu-content">
+      <button class="close-btn" id="close-rebirth-btn" title="Close Rebirth Menu">&times;</button>
+      <h2 style="margin-bottom:10px;">✨ Mystic Rebirth</h2>
+      <div id="rebirth-desc" style="margin-bottom: 18px;">
+        <p>
+          <b>Transcend your current form!</b><br>
+          Rebirth resets your Power and Upgrades,<br>
+          but grants you a permanent <span id="rebirth-bonus-preview">+5</span> Power per click<br>
+          for every Rebirth.<br>
+        </p>
+        <p style="color:#fffa7c;">
+          Are you sure you wish to proceed?<br>
+          <span style="font-size:0.95em;color:#fff;">(Requires 10,000 Power)</span>
+        </p>
+      </div>
+      <button class="rebirth-confirm-btn" id="confirm-rebirth-btn">Yes, Rebirth!</button>
+      <button class="rebirth-cancel-btn" id="cancel-rebirth-btn">No, Stay Mortal</button>
+    </div>
+  </div>
+
+  <script>
+    // Main stats
+    let power = 0;
+    let basePowerPerClick = 1;
+    let powerPerClick = 1;
+    let ascensions = 0;
+    let ascensionBonus = 0;
+    let totalPower = 0;
+
+    // Wizard-themed upgrades
+    const upgrades = [
+      {
+        name: "Enchanted Staff",
+        desc: "Doubles your power per click.",
+        cost: 50,
+        bought: false,
+        effect: () => { basePowerPerClick *= 2; }
+      },
+      {
+        name: "Apprentice Familiar",
+        desc: "Each click gains +5 Power.",
+        cost: 250,
+        bought: false,
+        effect: () => { basePowerPerClick += 5; }
+      },
+      {
+        name: "Arcane Tome",
+        desc: "Each click gains +15 Power.",
+        cost: 1000,
+        bought: false,
+        effect: () => { basePowerPerClick += 15; }
+      },
+      {
+        name: "Crystal Ball",
+        desc: "Triple your power per click.",
+        cost: 5000,
+        bought: false,
+        effect: () => { basePowerPerClick *= 3; }
+      }
+    ];
+
+    // Update UI
+    function updatePower() {
+      powerPerClick = basePowerPerClick + ascensionBonus;
+      document.getElementById('power').textContent = "Power: " + power;
+      document.getElementById('bonus').textContent = ascensions > 0
+        ? `Ascension Bonus: +${ascensionBonus} Power per click (from ${ascensions} Mystic Rebirth${ascensions > 1 ? 's' : ''})`
+        : '';
+      // Enable/disable rebirth
+      document.getElementById('open-rebirth-btn').disabled = power < 10000;
+      // Update upgrades in shop menu if open
+      if (document.getElementById('shop-overlay').style.display === "flex") {
+        renderUpgrades();
+      }
+      // Update rebirth bonus preview
+      document.getElementById('rebirth-bonus-preview').textContent = "+" + ((ascensions + 1) * 5);
+    }
+
+    // Render upgrades (in shop menu)
+    function renderUpgrades() {
+      let html = "";
+      for (let i = 0; i < upgrades.length; i++) {
+        const u = upgrades[i];
+        html += `<button class="upgrade-btn" id="upgrade-${i}" ${u.bought || power < u.cost ? 'disabled' : ''}>
+          ${u.bought ? "✅ " : ""}${u.name} (${u.cost} Power)<br>
+          <span style="font-size:.93em;color:#ffeedd99;">${u.desc}</span>
+        </button>`;
+      }
+      document.getElementById('upgrades').innerHTML = html;
+      // Attach listeners
+      for (let i = 0; i < upgrades.length; i++) {
+        if (!upgrades[i].bought && power >= upgrades[i].cost) {
+          document.getElementById(`upgrade-${i}`).onclick = function() {
+            power -= upgrades[i].cost;
+            upgrades[i].bought = true;
+            upgrades[i].effect();
+            updatePower();
+            renderUpgrades();
+          }
+        }
+      }
+    }
+
+    // Click wizard
+    document.getElementById('wizard-btn').addEventListener('click', () => {
+      power += powerPerClick;
+      totalPower += powerPerClick;
+      updatePower();
+    });
+
+    // === Shop & Rebirth Menu Logic ===
+    const shopOverlay = document.getElementById('shop-overlay');
+    const openShopBtn = document.getElementById('open-shop-btn');
+    const closeShopBtn = document.getElementById('close-shop-btn');
+    openShopBtn.onclick = () => {
+      shopOverlay.style.display = "flex";
+      renderUpgrades();
+    };
+    closeShopBtn.onclick = () => { shopOverlay.style.display = "none"; };
+
+    // Rebirth
+    const rebirthOverlay = document.getElementById('rebirth-overlay');
+    const openRebirthBtn = document.getElementById('open-rebirth-btn');
+    const closeRebirthBtn = document.getElementById('close-rebirth-btn');
+    const confirmRebirthBtn = document.getElementById('confirm-rebirth-btn');
+    const cancelRebirthBtn = document.getElementById('cancel-rebirth-btn');
+    openRebirthBtn.onclick = () => { rebirthOverlay.style.display = "flex"; };
+    closeRebirthBtn.onclick = () => { rebirthOverlay.style.display = "none"; };
+    cancelRebirthBtn.onclick = () => { rebirthOverlay.style.display = "none"; };
+
+    // Confirm rebirth
+    confirmRebirthBtn.onclick = function() {
+      if (power >= 10000) {
+        ascensions += 1;
+        ascensionBonus = ascensions * 5;
+        power = 0;
+        basePowerPerClick = 1;
+        for (const u of upgrades) u.bought = false;
+        rebirthOverlay.style.display = "none";
+        updatePower();
+        // Optional: Add a magical message
+        setTimeout(() => {
+          alert(`✨ You have performed a Mystic Rebirth!\nPermanent bonus: +${ascensionBonus} Power per click.`);
+        }, 250);
+      }
+    };
+
+    // Dismiss overlays on backdrop click
+    shopOverlay.onclick = function(e) { if (e.target === shopOverlay) shopOverlay.style.display = "none"; };
+    rebirthOverlay.onclick = function(e) { if (e.target === rebirthOverlay) rebirthOverlay.style.display = "none"; };
+
+    // Initial render
+    updatePower();
+  </script>
+</body>
+</html>
