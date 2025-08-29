@@ -20,10 +20,17 @@ h1 { margin-top: 32px; margin-bottom: 10px; }
   margin-bottom: 1em;
   min-height: 1.2em;
 }
-#power {
-  font-size: 2em;
-  margin: 1em 0;
-  text-shadow: 0 0 10px #a0f0ff;
+#stats {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 0.5em;
+  gap: 2px;
+}
+#power, #pps {
+  font-size: 1.1em;
+  min-height: 1.2em;
+  text-shadow: 0 0 10px #a0f0ff33;
 }
 .wizard-container {
   display: flex;
@@ -43,24 +50,36 @@ h1 { margin-top: 32px; margin-bottom: 10px; }
   padding: 0;
   touch-action: manipulation;
   position: relative;
+  outline: none;
+  width: 160px;
+  height: 180px;
+  overflow: visible;
 }
 #wizard-img {
   image-rendering: pixelated;
-  width: 128px;
-  height: 128px;
-  transition: transform 0.1s;
-  filter: drop-shadow(0 0 8px #a0f0ff88);
+  width: 160px;
+  height: 180px;
   pointer-events: none;
+  transition: transform 0.15s cubic-bezier(.25,1.7,.6,.95);
 }
-#wizard-btn:active #wizard-img {
-  transform: scale(1.08);
-  filter: brightness(1.2) drop-shadow(0 0 12px #fff);
+#wizard-btn.shake #wizard-img {
+  animation: shake-tilt 0.22s cubic-bezier(.25,1.7,.6,.95);
+}
+@keyframes shake-tilt {
+  0%   { transform: rotate(-2deg) translate(0, 0); }
+  12%  { transform: rotate(3deg) translate(-5px, 2px);}
+  25%  { transform: rotate(-4deg) translate(5px, -3px);}
+  38%  { transform: rotate(5deg) translate(-4px, 2px);}
+  51%  { transform: rotate(-3deg) translate(3px, 2px);}
+  64%  { transform: rotate(3deg) translate(-2px, -3px);}
+  77%  { transform: rotate(-2deg) translate(2px, 1px);}
+  100% { transform: rotate(0deg) translate(0, 0);}
 }
 #lightning-canvas {
   position: absolute;
   left: 0; top: 0;
-  width: 128px;
-  height: 128px;
+  width: 160px;
+  height: 180px;
   pointer-events: none;
   z-index: 2;
 }
@@ -192,5 +211,6 @@ h1 { margin-top: 32px; margin-bottom: 10px; }
 }
 @media (max-width: 600px) {
   .menu-content { padding: 14px 2vw 12px 2vw; }
-  #wizard-img, #lightning-canvas { width: 96px; height: 96px; }
+  #wizard-img, #lightning-canvas { width: 120px; height: 140px; }
+  .wizard-container, #wizard-btn { width: 120px; height: 140px; }
 }
