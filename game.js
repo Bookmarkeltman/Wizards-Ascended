@@ -114,9 +114,108 @@ function gameEvent() {
   updatePower();
 }
 
-document.getElementById('wizard-btn').addEventListener('click', () => {
+// Lightning effect logic
+const wizardBtn = document.getElementById('wizard-btn');
+const lightningCanvas = document.getElementById('lightning-canvas');
+const lc = lightningCanvas.getContext('2d');
+
+function drawLightning() {
+  lc.clearRect(0, 0, lightningCanvas.width, lightningCanvas.height);
+
+  // Parameters
+  const startX = 64, startY = 10 + Math.random() * 16;
+  const endX = 64 + (Math.random() - 0.5) * 24, endY = 118 + Math.random() * 8;
+  let points = [{x: startX, y: startY}];
+
+  // Generate points for a jagged lightning
+  let steps = 14 + Math.floor(Math.random() * 5);
+  for (let i = 1; i <= steps; ++i) {
+    let t = i / steps;
+    let nx = startX + (endX - startX) * t + (Math.random() - 0.5) * 14;
+    let ny = startY + (endY - startY) * t + (Math.random() - 0.5) * 10;
+    points.push({x: nx, y: ny});
+  }
+  points.push({x: endX, y: endY});
+
+  // Draw main (purple) lightning
+  lc.save();
+  lc.globalAlpha = 0.9;
+  lc.lineWidth = 4;
+  lc.shadowBlur = 8;
+  lc.shadowColor = "#b896ff";
+  lc.strokeStyle = "#ad22ff";
+  lc.beginPath();
+  lc.moveTo(points[0].x, points[0].y);
+  for (let p of points) lc.lineTo(p.x, p.y);
+  lc.stroke();
+  lc.restore();
+
+  // Draw inner (white) lightning
+  lc.save();
+  lc.globalAlpha = 0.7;
+  lc.lineWidth = 2;
+  lc.shadowBlur = 4;
+  lc.shadowColor = "#fff";
+  lc.strokeStyle = "#fff";
+  lc.beginPath();
+  lc.moveTo(points[0].x, points[0].y);
+  for (let p of points) lc.lineTo(p.x, p.y);
+  lc.stroke();
+  lc.restore();
+
+  // Draw black "shadow" branches
+  for (let j = 0; j < 2 + Math.floor(Math.random()*2); j++) {
+    let branchFrom = Math.floor(points.length * (0.3 + Math.random() * 0.4));
+    let len = 3 + Math.floor(Math.random() * 4);
+    let bx = points[branchFrom].x, by = points[branchFrom].y;
+    lc.save();
+    lc.globalAlpha = 0.4 + Math.random() * 0.2;
+    lc.lineWidth = 2.5;
+    lc.shadowBlur = 0;
+    lc.strokeStyle = "#0a0018";
+    lc.beginPath();
+    lc.moveTo(bx, by);
+    let angle = Math.PI/2 + (Math.random()-0.5)*1.3;
+    for (let k = 1; k <= len; k++) {
+      bx += Math.cos(angle) * (8 + Math.random() * 6);
+      by += Math.sin(angle) * (8 + Math.random() * 6);
+      lc.lineTo(bx, by);
+      angle += (Math.random()-0.5) * 0.8;
+    }
+    lc.stroke();
+    lc.restore();
+  }
+
+  // Animate fade out
+  let opacity = 1;
+  function fade() {
+    lc.globalCompositeOperation = "destination-out";
+    lc.globalAlpha = 0.18;
+    lc.fillRect(0,0,lightningCanvas.width,lightningCanvas.height);
+    lc.globalCompositeOperation = "source-over";
+    opacity -= 0.11;
+    if (opacity > 0) {
+      requestAnimationFrame(fade);
+    } else {
+      lc.clearRect(0, 0, lightningCanvas.width, lightningCanvas.height);
+    }
+  }
+  fade();
+}
+
+// Prevent double-tap zoom on iOS/Android
+wizardBtn.addEventListener('touchstart', function(e) {
+  if (e.touches.length > 1) return;
+  e.preventDefault();
+  // Simulate click for mobile
+  wizardBtn.click();
+}, {passive: false});
+
+// Click handler
+wizardBtn.addEventListener('click', () => {
   power += powerPerClick;
   totalPower += powerPerClick;
+  drawLightning();
   gameEvent();
 });
 
