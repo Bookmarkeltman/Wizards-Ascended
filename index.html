@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>Wizard’s Ascension: Power Unleashed</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
@@ -12,9 +12,12 @@
     <h1>Wizard’s Ascension</h1>
     <div id="bonus"></div>
     <div id="power">Power: 0</div>
-    <button id="wizard-btn" aria-label="Channel Power">
-      <img id="wizard-img" src="wizard.png" alt="Pixel Wizard">
-    </button>
+    <div class="wizard-container">
+      <button id="wizard-btn" aria-label="Channel Power">
+        <img id="wizard-img" src="wizard.png" alt="Pixel Wizard">
+        <canvas id="lightning-canvas" width="128" height="128" aria-hidden="true"></canvas>
+      </button>
+    </div>
     <nav id="menu-bar">
       <button class="menu-btn" id="open-shop-btn" type="button">Shop</button>
       <button class="menu-btn" id="open-rebirth-btn" type="button" disabled>Rebirth</button>
