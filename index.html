@@ -8,8 +8,19 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div id="left-sidebar">
+    <nav id="menu-bar">
+      <button class="menu-btn" id="open-shop-btn" type="button">Shop</button>
+      <button class="menu-btn" id="open-rebirth-btn" type="button" disabled>Rebirth</button>
+      <button class="menu-btn reset" id="reset-data-btn" type="button">Reset Data</button>
+    </nav>
+    <div id="version-label">v1.5.0</div>
+  </div>
   <main>
     <h1>Wizards Ascension</h1>
+    <div id="title-bar">
+      <span id="player-title">Title: Novice</span>
+    </div>
     <div id="bonus"></div>
     <div id="stats">
       <div id="power">Power: 0</div>
@@ -17,21 +28,17 @@
     </div>
     <div class="wizard-container">
       <button id="wizard-btn" aria-label="Channel Power">
+        <span id="wizard-outline"></span>
         <img id="wizard-img" src="wizard.png" alt="Wizard">
         <canvas id="lightning-canvas" width="160" height="180" aria-hidden="true"></canvas>
       </button>
       <audio id="click-audio" src="click.wav" preload="auto"></audio>
     </div>
-    <nav id="menu-bar">
-      <button class="menu-btn" id="open-shop-btn" type="button">Shop</button>
-      <button class="menu-btn" id="open-rebirth-btn" type="button" disabled>Rebirth</button>
-      <button class="menu-btn reset" id="reset-data-btn" type="button">Reset Data</button>
-    </nav>
     <div class="tip"><b>Tip:</b> Your progress is saved automatically!</div>
   </main>
 
   <!-- Shop Menu Overlay -->
-  <div class="menu-overlay" id="shop-overlay" aria-modal="true" aria-hidden="true">
+  <div class="side-menu" id="shop-overlay" aria-modal="true" aria-hidden="true">
     <div class="menu-content">
       <button class="close-btn" id="close-shop-btn" title="Close Shop" type="button">&times;</button>
       <h2>Shop</h2>
@@ -40,7 +47,7 @@
   </div>
 
   <!-- Rebirth Menu Overlay -->
-  <div class="menu-overlay" id="rebirth-overlay" aria-modal="true" aria-hidden="true">
+  <div class="side-menu" id="rebirth-overlay" aria-modal="true" aria-hidden="true">
     <div class="menu-content">
       <button class="close-btn" id="close-rebirth-btn" title="Close Rebirth Menu" type="button">&times;</button>
       <h2>Mystic Rebirth</h2>
