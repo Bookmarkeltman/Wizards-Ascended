@@ -11,31 +11,47 @@
   <div id="left-sidebar">
     <nav id="menu-bar">
       <button class="menu-btn" id="open-shop-btn" type="button">Shop</button>
+      <button class="menu-btn" id="open-titles-btn" type="button">Titles</button>
       <button class="menu-btn" id="open-rebirth-btn" type="button" disabled>Rebirth</button>
       <button class="menu-btn reset" id="reset-data-btn" type="button">Reset Data</button>
     </nav>
-    <div id="version-label">v1.5.0</div>
+    <div id="version-label">v1.6.0</div>
   </div>
   <main>
-    <h1>Wizards Ascension</h1>
-    <div id="title-bar">
-      <span id="player-title">Title: Novice</span>
+    <canvas id="main-lightning-canvas"></canvas>
+    <div class="center-content">
+      <h1>Wizards Ascension</h1>
+      <div id="title-bar">
+        <span id="player-title">Title: Novice</span>
+      </div>
+      <div id="bonus"></div>
+      <div id="stats">
+        <div id="power">Power: 0</div>
+        <div id="pps">Power per second: 0</div>
+      </div>
+      <div class="wizard-container">
+        <div class="wizard-bg">
+          <button id="wizard-btn" aria-label="Channel Power">
+            <span id="wizard-outline"></span>
+            <img id="wizard-img" src="wizard.png" alt="Wizard">
+            <canvas id="wizard-lightning-canvas" width="160" height="180" aria-hidden="true"></canvas>
+          </button>
+        </div>
+        <audio id="click-audio" src="click.wav" preload="auto"></audio>
+      </div>
+      <div class="tip"><b>Tip:</b> Your progress is saved automatically!</div>
     </div>
-    <div id="bonus"></div>
-    <div id="stats">
-      <div id="power">Power: 0</div>
-      <div id="pps">Power per second: 0</div>
-    </div>
-    <div class="wizard-container">
-      <button id="wizard-btn" aria-label="Channel Power">
-        <span id="wizard-outline"></span>
-        <img id="wizard-img" src="wizard.png" alt="Wizard">
-        <canvas id="lightning-canvas" width="160" height="180" aria-hidden="true"></canvas>
-      </button>
-      <audio id="click-audio" src="click.wav" preload="auto"></audio>
-    </div>
-    <div class="tip"><b>Tip:</b> Your progress is saved automatically!</div>
   </main>
+
+  <!-- Main Menu Overlay -->
+  <div id="main-menu-overlay" class="main-menu-overlay">
+    <div class="main-menu-content">
+      <h1 class="main-menu-title">Wizards Ascension</h1>
+      <button class="main-menu-btn" id="continue-btn">Continue</button>
+      <button class="main-menu-btn" id="new-game-btn">Start New Game</button>
+      <audio id="main-menu-music" src="mainmenu.mp3" preload="auto" loop></audio>
+    </div>
+  </div>
 
   <!-- Shop Menu Overlay -->
   <div class="side-menu" id="shop-overlay" aria-modal="true" aria-hidden="true">
@@ -45,7 +61,14 @@
       <div id="upgrades"></div>
     </div>
   </div>
-
+  <!-- Titles Menu Overlay -->
+  <div class="side-menu" id="titles-overlay" aria-modal="true" aria-hidden="true">
+    <div class="menu-content">
+      <button class="close-btn" id="close-titles-btn" title="Close Titles Menu" type="button">&times;</button>
+      <h2>Your Titles</h2>
+      <div id="titles-list"></div>
+    </div>
+  </div>
   <!-- Rebirth Menu Overlay -->
   <div class="side-menu" id="rebirth-overlay" aria-modal="true" aria-hidden="true">
     <div class="menu-content">
