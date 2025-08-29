@@ -1,0 +1,176 @@
+* { box-sizing: border-box; }
+body {
+  background: #181028;
+  color: #ffeedd;
+  font-family: 'Press Start 2P', monospace;
+  text-align: center;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+main {
+  max-width: 480px;
+  margin: 0 auto;
+  padding: 0 8px;
+}
+h1 { margin-top: 32px; margin-bottom: 10px; }
+#bonus {
+  color: #fffa7c;
+  font-size: 1.1em;
+  margin-bottom: 1em;
+  min-height: 1.2em;
+}
+#power {
+  font-size: 2em;
+  margin: 1em 0;
+  text-shadow: 0 0 10px #a0f0ff;
+}
+#wizard-btn {
+  background: none;
+  border: none;
+  margin: 30px 0;
+  cursor: pointer;
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
+}
+#wizard-img {
+  image-rendering: pixelated;
+  width: 128px;
+  height: 128px;
+  transition: transform 0.1s;
+  filter: drop-shadow(0 0 8px #a0f0ff88);
+}
+#wizard-btn:active #wizard-img {
+  transform: scale(1.08);
+  filter: brightness(1.2) drop-shadow(0 0 12px #fff);
+}
+#menu-bar {
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.menu-btn {
+  background: #242055;
+  color: #ffeedd;
+  border: 2px solid #a0f0ff;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1em;
+  padding: 10px 18px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 0 8px #a0f0ff;
+}
+.menu-btn:disabled {
+  background: #444;
+  color: #bbb;
+  cursor: not-allowed;
+  border: 2px solid #888;
+}
+.menu-btn.reset {
+  background: #a94444;
+  border-color: #ffaaaa;
+}
+.tip {
+  margin-top: 2em;
+  color: #aaa;
+  font-size: 0.9em;
+}
+.menu-overlay {
+  display: none;
+  position: fixed;
+  z-index: 999;
+  left: 0; top: 0; right: 0; bottom: 0;
+  background: rgba(24,16,40,0.90);
+  align-items: center;
+  justify-content: center;
+}
+.menu-overlay.active {
+  display: flex !important;
+}
+.menu-content {
+  background: #2a193e;
+  color: #ffeedd;
+  border: 4px solid #a0f0ff;
+  border-radius: 16px;
+  max-width: 400px;
+  width: 93vw;
+  margin: 0 auto;
+  box-shadow: 0 0 24px #a0f0ff88;
+  padding: 32px 18px 24px 18px;
+  position: relative;
+  text-align: left;
+  font-size: 1em;
+  animation: popin 0.25s;
+}
+@keyframes popin {
+  from {transform: scale(0.9);}
+  to {transform: scale(1);}
+}
+.close-btn {
+  position: absolute;
+  right: 14px; top: 10px;
+  background: none;
+  border: none;
+  color: #ffeedd;
+  font-size: 1.2em;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+.close-btn:hover {opacity:1;}
+.upgrade-btn {
+  margin: 12px 0;
+  font-size: 1em;
+  padding: 10px 18px;
+  background: #5a2e8a;
+  color: #fff;
+  border: 2px solid #e0bbff;
+  border-radius: 8px;
+  cursor: pointer;
+  font-family: 'Press Start 2P', monospace;
+  box-shadow: 0 0 8px #a0f0ff;
+  display: block;
+  width: 100%;
+  text-align: left;
+}
+.upgrade-btn[disabled] {
+  background: #444;
+  color: #bbb;
+  cursor: not-allowed;
+  border: 2px solid #888;
+}
+#upgrades { margin-bottom: 10px; }
+.rebirth-confirm-btn, .rebirth-cancel-btn {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1em;
+  padding: 10px 22px;
+  margin: 15px 8px 0 8px;
+  border-radius: 10px;
+  border: 2px solid #a0f0ff;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+.rebirth-confirm-btn {
+  background: #a0f0ff;
+  color: #442266;
+  font-weight:bold;
+  box-shadow: 0 0 10px #a0f0ff;
+}
+.rebirth-cancel-btn {
+  background: #444;
+  color: #fff;
+  border: 2px solid #888;
+}
+.rebirth-warning {
+  color:#fffa7c;
+  font-size: 1em;
+}
+@media (max-width: 600px) {
+  .menu-content { padding: 14px 2vw 12px 2vw; }
+  #wizard-img { width: 96px; height: 96px; }
+}
