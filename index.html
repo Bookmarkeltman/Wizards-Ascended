@@ -2,21 +2,25 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Wizard’s Ascension: Power Unleashed</title>
+  <title>Wizards Ascension</title>
   <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1.0">
   <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <main>
-    <h1>Wizard’s Ascension</h1>
+    <h1>Wizards Ascension</h1>
     <div id="bonus"></div>
-    <div id="power">Power: 0</div>
+    <div id="stats">
+      <div id="power">Power: 0</div>
+      <div id="pps">Power per second: 0</div>
+    </div>
     <div class="wizard-container">
       <button id="wizard-btn" aria-label="Channel Power">
-        <img id="wizard-img" src="wizard.png" alt="Pixel Wizard">
-        <canvas id="lightning-canvas" width="128" height="128" aria-hidden="true"></canvas>
+        <img id="wizard-img" src="wizard.png" alt="Wizard">
+        <canvas id="lightning-canvas" width="160" height="180" aria-hidden="true"></canvas>
       </button>
+      <audio id="click-audio" src="click.wav" preload="auto"></audio>
     </div>
     <nav id="menu-bar">
       <button class="menu-btn" id="open-shop-btn" type="button">Shop</button>
@@ -30,7 +34,7 @@
   <div class="menu-overlay" id="shop-overlay" aria-modal="true" aria-hidden="true">
     <div class="menu-content">
       <button class="close-btn" id="close-shop-btn" title="Close Shop" type="button">&times;</button>
-      <h2>🧙‍♂️ Wizard Shop</h2>
+      <h2>Shop</h2>
       <div id="upgrades"></div>
     </div>
   </div>
@@ -39,7 +43,7 @@
   <div class="menu-overlay" id="rebirth-overlay" aria-modal="true" aria-hidden="true">
     <div class="menu-content">
       <button class="close-btn" id="close-rebirth-btn" title="Close Rebirth Menu" type="button">&times;</button>
-      <h2>✨ Mystic Rebirth</h2>
+      <h2>Mystic Rebirth</h2>
       <div id="rebirth-desc">
         <p>
           <b>Transcend your current form!</b><br>
