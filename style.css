@@ -9,7 +9,7 @@ body {
 }
 #left-sidebar {
   width: 130px;
-  min-width: 82px;
+  min-width: 110px;
   background: #120c22;
   display: flex;
   flex-direction: column;
@@ -41,15 +41,17 @@ body {
   transition: background 0.2s, color 0.2s;
   box-shadow: 0 0 8px #a0f0ff;
   width: 110px;
+  min-width: 110px;
   margin: 0 auto;
   touch-action: manipulation;
-  word-break: break-word;
+  /* Force single line, no wrapping: */
+  white-space: nowrap;
   text-align: center;
-  white-space: pre-line;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 44px;
+  overflow: hidden;
 }
 .menu-btn:disabled {
   background: #444;
@@ -149,7 +151,8 @@ h1, .main-menu-title {
   width: 170px;
   height: 190px;
   margin: 0 auto;
-  box-shadow: 0 0 0 4px #a772ff, 0 0 24px 6px #a772ff88;
+  /* Remove the purple box-shadow to eliminate the box */
+  box-shadow: none;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -177,15 +180,12 @@ h1, .main-menu-title {
   left: 0; top: 0;
   z-index: 3;
   transition: transform 0.15s cubic-bezier(.25,1.7,.6,.95);
+  /* Make the white pixelated outline thinner and more subtle */
   filter:
-    drop-shadow(2px 0 0 #fff)
-    drop-shadow(-2px 0 0 #fff)
-    drop-shadow(0 2px 0 #fff)
-    drop-shadow(0 -2px 0 #fff)
-    drop-shadow(2px 2px 0 #fff)
-    drop-shadow(-2px 2px 0 #fff)
-    drop-shadow(2px -2px 0 #fff)
-    drop-shadow(-2px -2px 0 #fff);
+    drop-shadow(1px 0 0 #fff8)
+    drop-shadow(-1px 0 0 #fff8)
+    drop-shadow(0 1px 0 #fff8)
+    drop-shadow(0 -1px 0 #fff8);
 }
 #wizard-btn.shake #wizard-img {
   animation: shake-tilt 0.22s cubic-bezier(.25,1.7,.6,.95);
@@ -359,6 +359,7 @@ h1, .main-menu-title {
   color:#fffa7c;
   font-size: 1em;
 }
+/* Main menu overlay: FULL SCREEN COVERAGE */
 .main-menu-overlay {
   background: #181028f2;
   position: fixed;
@@ -368,10 +369,12 @@ h1, .main-menu-title {
   display: flex;
   align-items: center;
   justify-content: center;
+  pointer-events: auto;
 }
 .main-menu-content {
   background: #2a193e;
   border: 4px solid #a0f0ff;
+  /* Fullscreen; rounded on desktop, square on mobile */
   border-radius: 22px;
   box-shadow: 0 0 40px #a0f0ff55;
   color: #fff;
@@ -379,6 +382,10 @@ h1, .main-menu-title {
   display: flex;
   flex-direction: column;
   align-items: center;
+  width: 100vw;
+  height: 100vh;
+  box-sizing: border-box;
+  justify-content: center;
 }
 .main-menu-title {
   font-size: 2em;
@@ -415,10 +422,21 @@ h1, .main-menu-title {
   #left-sidebar { min-width: 60px; width: 76px; }
   .menu-btn { width: 65px; font-size: 0.90em; padding: 9px 0; }
   #version-label { font-size: 0.65em; margin-left: 4px;}
+  .main-menu-content {
+    padding: 18px 2vw 12px 2vw;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
   .main-menu-btn { width: 130px; font-size: 0.9em; }
 }
 @media (max-width: 600px) {
-  .main-menu-content { padding: 18px 2vw 12px 2vw;}
+  .main-menu-content {
+    padding: 8px 0 8px 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
   .menu-content { padding: 14px 2vw 12px 2vw; }
   #wizard-img, #wizard-lightning-canvas { width: 120px; height: 140px; }
   .wizard-outline-bg { width: 130px; height: 150px;}
