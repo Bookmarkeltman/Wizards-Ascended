@@ -8,8 +8,7 @@ body {
   display: flex;
 }
 #left-sidebar {
-  width: 130px;
-  min-width: 82px;
+  width: 140px;
   background: #120c22;
   display: flex;
   flex-direction: column;
@@ -25,7 +24,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: stretch;
-  gap: 28px;
+  gap: 24px;
   margin-top: 60px;
   width: 100%;
 }
@@ -34,22 +33,23 @@ body {
   color: #ffeedd;
   border: 2px solid #a0f0ff;
   font-family: 'Press Start 2P', monospace;
-  font-size: 1em;
+  font-size: 0.95em;
   padding: 10px 8px;
   border-radius: 10px;
   cursor: pointer;
   transition: background 0.2s, color 0.2s;
   box-shadow: 0 0 8px #a0f0ff;
-  width: 110px;
+  width: 120px;
+  min-width: 80px;
   margin: 0 auto;
-  touch-action: manipulation;
-  word-break: break-word;
-  text-align: center;
-  white-space: pre-line;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 44px;
+  letter-spacing: 1px;
 }
 .menu-btn:disabled {
   background: #444;
@@ -119,6 +119,18 @@ h1, .main-menu-title {
   width: 100%;
   text-align: center;
 }
+#event-banner {
+  width: 100%;
+  text-align: center;
+  min-height: 1.8em;
+  font-size: 1.06em;
+  font-weight: bold;
+  color: #ffeedd;
+  margin-bottom: 10px;
+  margin-top: 5px;
+  letter-spacing: 1.5px;
+  text-shadow: 0 0 12px #a772ffdd, 0 2px 4px #000a;
+}
 #stats {
   display: flex;
   flex-direction: column;
@@ -142,7 +154,6 @@ h1, .main-menu-title {
   margin-bottom: 0;
   height: 200px;
 }
-
 .wizard-outline-bg {
   background: transparent;
   border-radius: 18px;
@@ -177,15 +188,16 @@ h1, .main-menu-title {
   left: 0; top: 0;
   z-index: 3;
   transition: transform 0.15s cubic-bezier(.25,1.7,.6,.95);
+  /* Pixelated white outline using drop-shadows */
   filter:
-    drop-shadow(2px 0 0 #fff)
-    drop-shadow(-2px 0 0 #fff)
-    drop-shadow(0 2px 0 #fff)
-    drop-shadow(0 -2px 0 #fff)
-    drop-shadow(2px 2px 0 #fff)
-    drop-shadow(-2px 2px 0 #fff)
-    drop-shadow(2px -2px 0 #fff)
-    drop-shadow(-2px -2px 0 #fff);
+    drop-shadow(3px 0 0 #fff)
+    drop-shadow(-3px 0 0 #fff)
+    drop-shadow(0 3px 0 #fff)
+    drop-shadow(0 -3px 0 #fff)
+    drop-shadow(3px 3px 0 #fff)
+    drop-shadow(-3px 3px 0 #fff)
+    drop-shadow(3px -3px 0 #fff)
+    drop-shadow(-3px -3px 0 #fff);
 }
 #wizard-btn.shake #wizard-img {
   animation: shake-tilt 0.22s cubic-bezier(.25,1.7,.6,.95);
@@ -369,6 +381,9 @@ h1, .main-menu-title {
   align-items: center;
   justify-content: center;
 }
+.main-menu-overlay[style*="display: none"] {
+  display: none !important;
+}
 .main-menu-content {
   background: #2a193e;
   border: 4px solid #a0f0ff;
@@ -379,6 +394,7 @@ h1, .main-menu-title {
   display: flex;
   flex-direction: column;
   align-items: center;
+  min-width: 320px;
 }
 .main-menu-title {
   font-size: 2em;
@@ -401,19 +417,62 @@ h1, .main-menu-title {
   cursor: pointer;
   text-align: center;
   width: 220px;
-  word-break: break-word;
-  white-space: pre-line;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
   display: flex;
   align-items: center;
   justify-content: center;
   min-height: 44px;
+  letter-spacing: 1px;
 }
 .main-menu-btn:active {
   background: #4d3685;
 }
+.main-menu-uid {
+  margin-top: 18px;
+  color: #b19fff;
+  font-size: 0.9em;
+  text-align: center;
+  width: 100%;
+  letter-spacing: 1px;
+  user-select: all;
+}
+.ban-overlay {
+  background: #14020aee;
+  position: fixed;
+  z-index: 5000;
+  left: 0; top: 0; right: 0; bottom: 0;
+  width: 100vw; height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.ban-message {
+  background: #2a193e;
+  border: 6px solid #ff2222;
+  border-radius: 22px;
+  box-shadow: 0 0 40px #ff222277;
+  color: #fff;
+  padding: 56px 30px 42px 30px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  min-width: 320px;
+}
+.ban-message h1 {
+  color: #ff4444;
+  font-size: 2.2em;
+  margin-bottom: 24px;
+}
+.ban-message p {
+  color: #fff;
+  font-size: 1.1em;
+  margin-top: 0;
+}
 @media (max-width: 800px) {
   #left-sidebar { min-width: 60px; width: 76px; }
-  .menu-btn { width: 65px; font-size: 0.90em; padding: 9px 0; }
+  .menu-btn { width: 70px; font-size: 0.93em; padding: 9px 0; }
   #version-label { font-size: 0.65em; margin-left: 4px;}
   .main-menu-btn { width: 130px; font-size: 0.9em; }
 }
