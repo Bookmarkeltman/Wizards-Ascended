@@ -2,6 +2,7 @@
 
 // ==== GLOBALS & ANTI-CHEAT SETUP ====
 const GAME_VERSION = "v2.0.0";
+const ADMIN_CODE = 'Uadmin!))<un>"ban"';
 
 // Unique User ID (never resets)
 function getUserId() {
@@ -13,12 +14,33 @@ function getUserId() {
   return uid;
 }
 
-// Ban system
+// Admin/unbanable storage
+function getAdminIds() {
+  try {
+    return JSON.parse(localStorage.getItem("adminIds") || "[]");
+  } catch {
+    return [];
+  }
+}
+function addAdminId(id) {
+  const admins = getAdminIds();
+  if (!admins.includes(id)) {
+    admins.push(id);
+    localStorage.setItem("adminIds", JSON.stringify(admins));
+  }
+}
+function isAdmin() {
+  const uid = getUserId();
+  return getAdminIds().includes(uid) || localStorage.getItem("isAdmin") === "1";
+}
+
+// Ban system (NEW)
 function isBanned() {
   return localStorage.getItem("banned") === "1";
 }
 function banUser() {
-  localStorage.setItem("banned", "1");
+  // Don't ban admins
+  if (isAdmin()) return;
   document.body.innerHTML = '';
   const banDiv = document.createElement("div");
   banDiv.className = "ban-overlay";
@@ -30,10 +52,31 @@ function banUser() {
         If you believe this is a mistake, contact the developer.<br>
         Your User ID: <span id="ban-userid">${getUserId()}</span>
       </p>
+      <input id="ban-code-input" placeholder="Enter code to unban..." style="margin-top:20px;font-size:1.1em;width:80%;padding:8px;">
+      <button id="ban-code-btn" style="margin-top:10px;padding:8px 18px;font-size:1em;">Submit</button>
+      <div id="ban-code-msg" style="margin-top:10px;color:#fffa7c;font-size:1em;"></div>
     </div>`;
   document.body.appendChild(banDiv);
+
+  // Unban/admin logic
+  document.getElementById('ban-code-btn').onclick = function() {
+    const input = document.getElementById('ban-code-input').value.trim();
+    const msgDiv = document.getElementById('ban-code-msg');
+    if (input === ADMIN_CODE) {
+      // Unban and mark admin
+      localStorage.removeItem("banned");
+      localStorage.setItem("isAdmin", "1");
+      addAdminId(getUserId());
+      msgDiv.textContent = "Unbanned! You are now an admin. Reloading...";
+      setTimeout(() => location.reload(), 1000);
+    } else {
+      msgDiv.textContent = "Incorrect code.";
+    }
+  };
+  // Block further code execution
+  throw new Error("Banned");
 }
-if (isBanned()) { banUser(); throw new Error("Banned"); }
+if (isBanned()) { banUser(); }
 
 // ==== GAME STATE ====
 let power = 0;
@@ -181,6 +224,9 @@ function loadGame() {
 // 3. Console open/inspect element detection (basic detection)
 let cheatTimeout = null;
 function cheatBan(reason) {
+  // Don't ban admin
+  if (isAdmin()) return;
+  localStorage.setItem("banned", "1");
   banUser();
   throw new Error("Banned: " + reason);
 }
@@ -490,6 +536,7 @@ function resetGameData() {
 // No JS needed for pixel outline, handled via CSS.
 
 // Wizard click: shake, sound, power
+const wizardBtn = document.getElementById('wizard-btn');
 wizardBtn.addEventListener('click', () => {
   const titleBonus = getEquippedTitleBonus();
   const {mulPPC} = getEventMultipliers();
