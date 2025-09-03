@@ -1,111 +1,73 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <title>Wizards Ascension</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1, user-scalable=no, maximum-scale=1.0">
-  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <div id="left-sidebar">
-    <nav id="menu-bar">
-      <button class="menu-btn" id="open-shop-btn" type="button">Shop</button>
-      <button class="menu-btn" id="open-titles-btn" type="button">Titles</button>
-      <button class="menu-btn" id="open-rebirth-btn" type="button">Rebirth</button>
-      <button class="menu-btn reset" id="reset-data-btn" type="button">Reset Data</button>
-    </nav>
-    <div id="version-label">v1.7.0</div>
-  </div>
-  <main>
-    <canvas id="main-lightning-canvas"></canvas>
-    <div class="center-content">
-      <h1>Wizards Ascension</h1>
-      <div id="title-bar">
-        <span id="player-title">Title: Novice</span>
-      </div>
-      <div id="bonus"></div>
-      <div id="event-banner"></div>
-      <div id="stats">
-        <div id="power">Power: 0</div>
-        <div id="pps">Power per second: 0</div>
-      </div>
-      <div class="wizard-container">
-        <div class="wizard-outline-bg">
-          <button id="wizard-btn" aria-label="Channel Power">
-            <img id="wizard-img" src="wizard.png" alt="Wizard">
-            <canvas id="wizard-lightning-canvas" width="160" height="180" aria-hidden="true"></canvas>
-          </button>
-        </div>
-        <audio id="click-audio" src="click.wav" preload="auto"></audio>
-      </div>
-      <div class="tip"><b>Tip:</b> Your progress is saved automatically!</div>
-    </div>
-  </main>
-
-  <!-- Main Menu Overlay -->
-  <div id="main-menu-overlay" class="main-menu-overlay">
-    <div class="main-menu-content">
-      <h1 class="main-menu-title">Wizards Ascension</h1>
-      <button class="main-menu-btn" id="continue-btn">Continue</button>
-      <button class="main-menu-btn" id="new-game-btn">Start New Game</button>
-      <div class="main-menu-uid" id="main-menu-uid"></div>
-      <audio id="main-menu-music" src="mainmenu.mp3" preload="auto" loop></audio>
-    </div>
-  </div>
-
-  <!-- Ban Overlay -->
-  <div id="ban-overlay" class="ban-overlay" style="display:none;">
-    <div class="ban-message">
-      <h1>Banned for Cheating</h1>
-      <p>You have been banned for attempting to cheat or manipulate the game.<br>
-      If you believe this is a mistake, contact the developer.<br>
-      Your User ID: <span id="ban-userid"></span></p>
-    </div>
-  </div>
-
-  <!-- Shop Menu Overlay -->
-  <div class="side-menu" id="shop-overlay" aria-modal="true" aria-hidden="true">
+  <div id="main-menu-overlay" class="fullscreen-menu">
     <div class="menu-content">
-      <button class="close-btn" id="close-shop-btn" title="Close Shop" type="button">&times;</button>
+      <h1>Wizards Ascension</h1>
+      <div id="main-menu-uid"></div>
+      <button id="continue-btn" class="menu-btn">Continue</button>
+      <button id="new-game-btn" class="menu-btn">New Game</button>
+    </div>
+    <audio id="main-menu-music" src="menu.mp3" loop></audio>
+  </div>
+
+  <div id="event-banner"></div>
+  <div id="title-bar"></div>
+  <div id="wizard-area">
+    <button id="wizard-btn" class="pixel-outline"></button>
+  </div>
+
+  <div id="power"></div>
+  <div id="pps"></div>
+  <div id="bonus"></div>
+  <div id="version-label"></div>
+
+  <button id="open-shop-btn" class="menu-btn">Shop</button>
+  <button id="open-titles-btn" class="menu-btn">Titles</button>
+  <button id="open-rebirth-btn" class="menu-btn">Rebirth</button>
+  <button id="reset-data-btn" class="menu-btn">Reset Data</button>
+
+  <div id="shop-overlay" class="overlay-menu">
+    <div class="shop-content">
       <h2>Shop</h2>
       <div id="upgrades"></div>
+      <button id="close-shop-btn" class="menu-btn">Close</button>
     </div>
   </div>
-  <!-- Titles Menu Overlay -->
-  <div class="side-menu" id="titles-overlay" aria-modal="true" aria-hidden="true">
-    <div class="menu-content">
-      <button class="close-btn" id="close-titles-btn" title="Close Titles Menu" type="button">&times;</button>
-      <h2>Your Titles</h2>
+
+  <div id="titles-overlay" class="overlay-menu">
+    <div class="titles-content">
+      <h2>Titles</h2>
       <div id="titles-list"></div>
+      <button id="close-titles-btn" class="menu-btn">Close</button>
     </div>
   </div>
-  <!-- Rebirth Menu Overlay -->
-  <div class="side-menu" id="rebirth-overlay" aria-modal="true" aria-hidden="true">
-    <div class="menu-content">
-      <button class="close-btn" id="close-rebirth-btn" title="Close Rebirth Menu" type="button">&times;</button>
-      <h2>Mystic Rebirth</h2>
-      <div id="rebirth-locked" style="display:none;text-align:center;">
-        <div style="font-size:2em;margin-bottom:10px;">🔒</div>
-        <div>Requires 10,000 Power</div>
-        <div>You have: <span id="rebirth-power-current"></span> / 10,000</div>
+
+  <div id="rebirth-overlay" class="overlay-menu">
+    <div class="rebirth-content">
+      <h2>Rebirth</h2>
+      <div id="rebirth-locked" class="rebirth-locked">
+        <div class="locked-icon"></div>
+        <div class="progress-container">
+          <div id="rebirth-progress-bar" class="progress-bar"></div>
+        </div>
+        <div id="rebirth-locked-num" class="progress-num"></div>
       </div>
       <div id="rebirth-desc">
-        <p>
-          <b>Transcend your current form!</b><br>
-          Rebirth resets your Power and Upgrades,<br>
-          but grants you a permanent <span id="rebirth-bonus-preview">+5</span> Power per click<br>
-          for every Rebirth.<br>
-        </p>
-        <p class="rebirth-warning">
-          Are you sure you wish to proceed?<br>
-          <span>(Requires 10,000 Power)</span>
-        </p>
+        <div>Current Power: <span id="rebirth-power-current">0</span></div>
+        <div>Rebirth Bonus Preview: <span id="rebirth-bonus-preview">+5</span></div>
+        <button id="confirm-rebirth-btn" class="menu-btn">Rebirth</button>
       </div>
-      <button class="rebirth-confirm-btn" id="confirm-rebirth-btn" type="button">Yes, Rebirth!</button>
-      <button class="rebirth-cancel-btn" id="cancel-rebirth-btn" type="button">No, Stay Mortal</button>
+      <button id="cancel-rebirth-btn" class="menu-btn">Close</button>
     </div>
   </div>
+
+  <canvas id="main-lightning-canvas"></canvas>
   <script src="game.js"></script>
 </body>
 </html>
