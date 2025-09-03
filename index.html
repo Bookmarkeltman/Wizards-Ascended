@@ -12,10 +12,10 @@
     <nav id="menu-bar">
       <button class="menu-btn" id="open-shop-btn" type="button">Shop</button>
       <button class="menu-btn" id="open-titles-btn" type="button">Titles</button>
-      <button class="menu-btn" id="open-rebirth-btn" type="button" disabled>Rebirth</button>
+      <button class="menu-btn" id="open-rebirth-btn" type="button">Rebirth</button>
       <button class="menu-btn reset" id="reset-data-btn" type="button">Reset Data</button>
     </nav>
-    <div id="version-label">v1.6.1</div>
+    <div id="version-label">v1.7.0</div>
   </div>
   <main>
     <canvas id="main-lightning-canvas"></canvas>
@@ -25,6 +25,7 @@
         <span id="player-title">Title: Novice</span>
       </div>
       <div id="bonus"></div>
+      <div id="event-banner"></div>
       <div id="stats">
         <div id="power">Power: 0</div>
         <div id="pps">Power per second: 0</div>
@@ -48,7 +49,18 @@
       <h1 class="main-menu-title">Wizards Ascension</h1>
       <button class="main-menu-btn" id="continue-btn">Continue</button>
       <button class="main-menu-btn" id="new-game-btn">Start New Game</button>
+      <div class="main-menu-uid" id="main-menu-uid"></div>
       <audio id="main-menu-music" src="mainmenu.mp3" preload="auto" loop></audio>
+    </div>
+  </div>
+
+  <!-- Ban Overlay -->
+  <div id="ban-overlay" class="ban-overlay" style="display:none;">
+    <div class="ban-message">
+      <h1>Banned for Cheating</h1>
+      <p>You have been banned for attempting to cheat or manipulate the game.<br>
+      If you believe this is a mistake, contact the developer.<br>
+      Your User ID: <span id="ban-userid"></span></p>
     </div>
   </div>
 
@@ -73,6 +85,11 @@
     <div class="menu-content">
       <button class="close-btn" id="close-rebirth-btn" title="Close Rebirth Menu" type="button">&times;</button>
       <h2>Mystic Rebirth</h2>
+      <div id="rebirth-locked" style="display:none;text-align:center;">
+        <div style="font-size:2em;margin-bottom:10px;">🔒</div>
+        <div>Requires 10,000 Power</div>
+        <div>You have: <span id="rebirth-power-current"></span> / 10,000</div>
+      </div>
       <div id="rebirth-desc">
         <p>
           <b>Transcend your current form!</b><br>
